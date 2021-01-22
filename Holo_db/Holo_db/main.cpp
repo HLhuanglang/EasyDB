@@ -2,50 +2,8 @@
 #include<string>
 #include<algorithm>
 #include"commonds_def.h"
-
-
-void dispaly_introduce_Holo_DB()
-{
-	std::string display_introduce_msg = R"(
-==============================================
-  This is a personal project, do this project 
-I hope to understand how does a database work, 
-especiall how to achieve.
-  this db i plan to clone sqlite, just achieve
-some feature i want. And Why I use c++? because
-i work with it. Maybe in the future, I will 
-consider implementing a C language version.
-  if you have any question or sugesstion,you can
-contact me by e-mail.
-===============================================
-author:HLhuanglang
-email:1282424466@qq.com
-===============================================
-	)";
-	std::cout << display_introduce_msg << std::endl;
-}
-
-void display_HoloDB()
-{
-	std::cout << "Holo_DB> ";
-}
-
-void display_HelpMsg()
-{
-	std::string display_msg = R"(
-================Holo_DB===================
-|--------cmd--------|-------description--|
-==========================================
-|.help              |show info
-|.clear             |clear screen
-|.exit              |quit Holo_DB
-|.quit              |quit Holo_DB
-|.open /x/x/xxx.db  |open a database(Abs path)
-|.create xxx.db     |create a database under current path
-==========================================
-	)";
-	std::cout << display_msg << std::endl;
-}
+#include"display_msg.h"
+#include"log.h"
 
 bool is_invalid_cmd(const std::string& cmd)
 {
@@ -56,7 +14,8 @@ bool is_invalid_cmd(const std::string& cmd)
 	} else if (cmd == Holo_DB_exit
 		|| cmd == Holo_DB_quit
 		|| cmd == Holo_DB_help
-		|| cmd == Holo_DB_clear) {
+		|| cmd == Holo_DB_clear
+		|| cmd == Holo_DB_q) {
 		return true;
 	} else {
 		return false;
@@ -79,22 +38,28 @@ void trim_cmd(std::string& cmd)
 	std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
 }
 
-int main()
+int main(int count, char* input_parameters[])
 {
-	dispaly_introduce_Holo_DB();
-
+	std::string db_path = "";	//数据库文件的路径
+	if (count > 1) {
+		//count表示程序入参个数,默认为1,参数是程序的名字
+		db_path = input_parameters[1];
+	}
+	
+	DisplayMsg dis_msg;
+	dis_msg.dispaly_introduce_Holo_DB();
 	char InputBuffer[2048];	//存放用户输入
 
 	while (true) {
-		display_HoloDB();
+		dis_msg.display_HoloDB();
 		std::cin.getline(InputBuffer, sizeof(InputBuffer));
 		std::string cmd = InputBuffer;
 		trim_cmd(cmd);
 		if (is_invalid_cmd(cmd)) {
-			if (cmd.compare(Holo_DB_exit) == 0 || cmd.compare(Holo_DB_quit) == 0) {
+			if (cmd.compare(Holo_DB_exit) == 0 || cmd.compare(Holo_DB_quit) == 0 || cmd.compare(Holo_DB_q) == 0) {
 				exit(EXIT_SUCCESS);
 			} else if (cmd.compare(Holo_DB_help) == 0) {
-				display_HelpMsg();
+				dis_msg.display_HelpMsg();
 			} else if (cmd.compare(Holo_DB_clear) == 0) {
 				system("cls");
 			}

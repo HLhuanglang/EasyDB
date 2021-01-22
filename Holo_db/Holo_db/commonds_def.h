@@ -5,6 +5,7 @@
 
 const std::string Holo_DB_exit = ".exit";			//退出
 const std::string Holo_DB_quit = ".quit";			//退出
+const std::string Holo_DB_q = ".q";					//退出缩写,便捷性
 const std::string Holo_DB_help = ".help";			//帮助信息
 const std::string Holo_DB_clear = ".clear";			//清屏
 const std::string Holo_DB_open = ".open";			//打开数据库
