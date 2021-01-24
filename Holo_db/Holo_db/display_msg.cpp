@@ -1,22 +1,19 @@
-#include"display_msg.h"
-#include<string>
-#include<iostream>
+#include "display_msg.h"
 
-void DisplayMsg::display_HoloDB()
-{
-	std::cout << "Holo_DB> ";
-}
+#include <iostream>
+#include <string>
 
-void DisplayMsg::dispaly_introduce_Holo_DB()
-{
-	std::string display_introduce_msg = R"(
+void DisplayMsg::display_HoloDB() { std::cout << "Holo_DB> "; }
+
+void DisplayMsg::dispaly_introduce_Holo_DB() {
+  std::string display_introduce_msg = R"(
 ==============================================
-  This is a personal project, do this project 
-I hope to understand how does a database work, 
+  This is a personal project, do this project
+I hope to understand how does a database work,
 especiall how to achieve.
   this db i plan to clone sqlite, just achieve
 some feature i want. And Why I use c++? because
-i work with it. Maybe in the future, I will 
+i work with it. Maybe in the future, I will
 consider implementing a C language version.
   if you have any question or sugesstion,you can
 contact me by e-mail.
@@ -25,12 +22,11 @@ author:HLhuanglang
 email:1282424466@qq.com
 ===============================================
 	)";
-	std::cout << display_introduce_msg << std::endl;
+  std::cout << display_introduce_msg << std::endl;
 }
 
-void DisplayMsg::display_HelpMsg()
-{
-	std::string display_msg = R"(
+void DisplayMsg::display_HelpMsg() {
+  std::string display_msg = R"(
 ================Holo_DB===================
 |--------cmd--------|-------description--|
 ==========================================
@@ -44,5 +40,5 @@ void DisplayMsg::display_HelpMsg()
 |.database          |Show the currently used database
 ==========================================
 	)";
-	std::cout << display_msg << std::endl;
+  std::cout << display_msg << std::endl;
 }

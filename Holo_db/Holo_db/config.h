@@ -3,14 +3,14 @@
 
 #if defined(_MSC_VER)
 #ifndef HOLO_API
-#define HOLO_API  __declspec(dllexport)
+#define HOLO_API __declspec(dllexport)
 #else
-#define HOLO_API  __declspec(dllimport)
+#define HOLO_API __declspec(dllimport)
 #endif
 #elif defined(__GNUC__)
-#define HOLO_API  __attribute__((visibility("default")))
+#define HOLO_API __attribute__((visibility("default")))
 #else
 #define HOLO_API
 #endif
 
-#endif // __HOLO_DB_CONFIG_H__
+#endif  // __HOLO_DB_CONFIG_H__
