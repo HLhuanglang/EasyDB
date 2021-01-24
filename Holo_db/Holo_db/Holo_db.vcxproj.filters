@@ -21,7 +21,10 @@
     <ClCompile Include="display_msg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="log.cpp">
+    <ClCompile Include="hldb_log.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="hldb_file.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,10 +38,16 @@
     <ClInclude Include="display_msg.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="log.h">
+    <ClInclude Include="config.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="config.h">
+    <ClInclude Include="commonfunc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hldb_log.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hldb_file.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
