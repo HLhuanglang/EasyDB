@@ -49,12 +49,14 @@
   XXX(LOG_LEVEL_ERROR, "ERROR", CLR_RED)   \
   XXX(LOG_LEVEL_FATAL, "FATAL", CLR_RED_WHT)
 
+// 日志级别：
+// [VERBOSE、DEBUG、INFO、WARN、ERROR、FATAL、NULL(不打印)]
 typedef enum {
   LOG_LEVEL_VERBOSE = 0,
 #define XXX(id, str, clr) id,
   LOG_LEVEL_MAP(XXX)
 #undef XXX
-      LOG_LEVEL_SILENT
+      LOG_LEVEL_NULL
 } log_level_e;
 
 typedef enum {
@@ -65,7 +67,7 @@ typedef enum {
 
 // some default macro
 #define DEFAULT_LOG_FILE "Holo_DB"
-#define DEFAULT_LOG_LEVEL LOG_LEVEL_INFO
+#define DEFAULT_LOG_LEVEL LOG_LEVEL_DEBUG
 #define DEFAULT_LOG_MAX_BUFSIZE (1 << 14)   // 16k
 #define DEFAULT_LOG_MAX_FILESIZE (1 << 24)  // 16M
 
@@ -74,12 +76,13 @@ using logger_hander =
 
 struct HoloDBLogger {
   logger_hander handler_;
-  unsigned int bufsize_;
-  char* buf_;
+  unsigned int bufsize_;  //待输出数组的大小
+  char* buf_;             //指向待输出数组的指针
   int log_level_;
   std::string file_path_;
   size_t max_logfilesize_;
   int enable_fsync_;
+  int enable_color_;
   FILE* fp_;
   std::mutex mtx_;
   int log_target_;
@@ -88,6 +91,7 @@ struct HoloDBLogger {
 class HoloDBLog {
  public:
   static HoloDBLog* GetInstance();
+  void logger_init();
   void logger_print(int log_level, const char* fmt, ...);
   void logger_set_log_target(const std::string& target);
   void logger_set_filepath(const std::string& file_path);
@@ -105,6 +109,9 @@ class HoloDBLog {
 /***************************************************************
  * 供用户使用的宏
  **************************************************************/
+
+//日志初始化
+#define hldb_log_init() HoloDBLog::GetInstance()->logger_init()
 
 //设置日志信息输出地,若设置为仅输出到终端,则后续宏不起作用
 #define hldb_log_set_target_by_str(target) \
@@ -128,9 +135,37 @@ class HoloDBLog {
 #define hldb_log_set_filesize_by_str(filesize_str) \
   HoloDBLog::GetInstance()->logger_set_filesize(filesize_str)
 
-#define hldb_log_debug(fmt, ...)                                              \
-  HoloDBLog::GetInstance()->logger_print(LOG_LEVEL_DEBUG,                     \
-                                         fmt "[%s]:[%d]:[%s]", ##__VA_ARGS__, \
-                                         __FILENAME__, __LINE__, __FUNCTION__)
+// 日志信息
+#define hldb_log_debug(fmt, ...)                                          \
+  HoloDBLog::GetInstance()->logger_print(                                 \
+      LOG_LEVEL_DEBUG, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+      __FUNCTION__, ##__VA_ARGS__)
+
+#define hldb_log_info(fmt, ...)                                          \
+  HoloDBLog::GetInstance()->logger_print(                                \
+      LOG_LEVEL_INFO, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+      __FUNCTION__, ##__VA_ARGS__)
+
+#define hldb_log_warn(fmt, ...)                                          \
+  HoloDBLog::GetInstance()->logger_print(                                \
+      LOG_LEVEL_WARN, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+      __FUNCTION__, ##__VA_ARGS__)
+
+#define hldb_log_error(fmt, ...)                                          \
+  HoloDBLog::GetInstance()->logger_print(                                 \
+      LOG_LEVEL_ERROR, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+      __FUNCTION__, ##__VA_ARGS__)
+
+#define hldb_log_fatal(fmt, ...)                                          \
+  HoloDBLog::GetInstance()->logger_print(                                 \
+      LOG_LEVEL_FATAL, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+      __FUNCTION__, ##__VA_ARGS__)
+
+// 别名
+#define LOGDEBUG hldb_log_debug
+#define LOGINFO hldb_log_info
+#define LOGWARN hldb_log_warn
+#define LOGERROR hldb_log_error
+#define LOGFATAL hldb_log_fatal
 
 #endif __HOLO_DB_LOG_H__

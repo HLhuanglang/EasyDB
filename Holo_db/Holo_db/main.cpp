@@ -8,7 +8,6 @@
 #include "commonfunc.h"
 #include "display_msg.h"
 #include "hldb_log.h"
-#include "log.h"
 
 bool is_invalid_cmd(const std::string& cmd) {
   if (cmd.empty()) {
@@ -39,6 +38,9 @@ void trim_cmd(std::string& cmd) {
 }
 
 int main(int count, char* input_parameters[]) {
+  // 日志组件初始化
+  hldb_log_init();
+
   // windows下通过cmd或git bash以"start Holo_DB.exe db_path"
   // linux下直接 Holo_DB db_path
   // 以上述两种方式启动时,获取指定的数据库文件路径
@@ -49,10 +51,7 @@ int main(int count, char* input_parameters[]) {
     db_path = input_parameters[1];
   }
 
-  std::cout << db_path << std::endl;
-
-  hldb_log_set_target_by_str("terminal");
-  hldb_log_debug("Test:%s", "test1");
+  LOGINFO("db_path:%s", db_path.c_str());
 
   // 信息打印对象
   DisplayMsg dis_msg;
@@ -60,7 +59,7 @@ int main(int count, char* input_parameters[]) {
 
   // 如果指定了数据库地址,则需要判断是否有效
   if (!db_path.empty() && !hldb::FileExist(db_path)) {
-    printf("Error: %s is not exist \n", db_path.c_str());
+    LOGINFO("数据库文件不存在:%s", db_path.c_str());
   }
 
   // 存放用户输入的命令
@@ -88,9 +87,9 @@ int main(int count, char* input_parameters[]) {
         // sql语句
       }
     } else {
-      printf(
-          "Error: unkonw commond or invalid arguments:\"%s\". Enter \".help\" "
-          "for help\n",
+      LOGERROR(
+          "Error:unkonw commond or invalid arguments:[%s]. Enter[.help] for "
+          "help!\n",
           cmd.c_str());
     }
   }
