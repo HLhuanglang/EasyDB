@@ -140,7 +140,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="display_msg.cpp" />
-    <ClCompile Include="hldb_file.cpp" />
     <ClCompile Include="hldb_log.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -149,8 +148,8 @@
     <ClInclude Include="commonfunc.h" />
     <ClInclude Include="display_msg.h" />
     <ClInclude Include="config.h" />
-    <ClInclude Include="hldb_file.h" />
     <ClInclude Include="hldb_log.h" />
+    <ClInclude Include="hldb_lru.h" />
     <ClInclude Include="keywords_def.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
