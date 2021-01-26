@@ -3,6 +3,7 @@
 #include <Windows.h>
 #endif  // _WIN32
 #include <iostream>
+#include <thread>
 
 HoloDBLog* HoloDBLog::GetInstance() {
   static HoloDBLog instance;
@@ -14,10 +15,10 @@ void HoloDBLog::logger_init() {
   logger_->bufsize_ = DEFAULT_LOG_MAX_BUFSIZE;
   logger_->buf_ = (char*)malloc(logger_->bufsize_);
   logger_->log_level_ = DEFAULT_LOG_LEVEL;
-  logger_->file_path_ = "";
+  logger_->file_path_ = DEFAULT_LOG_FILE_PATH;
   logger_->max_logfilesize_ = DEFAULT_LOG_MAX_BUFSIZE;
-  logger_->enable_fsync_ = 1;
-  logger_->enable_color_ = 1;
+  logger_->enable_fsync_ = true;
+  logger_->enable_color_ = false;
   logger_->fp_ = NULL;
   logger_->log_target_ = log_target_e::terminal;
 }
@@ -35,7 +36,7 @@ void HoloDBLog::logger_set_log_target(const std::string& target) {
 }
 
 void HoloDBLog::logger_set_filepath(const std::string& file_path) {
-  logger_->file_path_ = file_path;
+  logger_->file_path_ = file_path + ".log";
 }
 
 void HoloDBLog::logger_set_level(const std::string& log_level) {
@@ -62,6 +63,35 @@ void HoloDBLog::logger_set_filesize(size_t file_size) {
 
 void HoloDBLog::logger_set_filesize(const std::string& file_size) {
   // todo
+}
+
+void HoloDBLog::logger_enable_color(bool flag) {
+  if (flag) {
+    logger_->enable_color_ = true;
+  } else {
+    logger_->enable_color_ = false;
+  }
+}
+
+void HoloDBLog::logger_enable_fsync(bool flag) {
+  if (flag) {
+    logger_->enable_fsync_ = true;
+  } else {
+    logger_->enable_fsync_ = false;
+  }
+}
+
+void HoloDBLog::logger_write(const char* buf, size_t size) {
+  std::unique_lock<std::timed_mutex> uqlk(this->logger_->mtx_, std::defer_lock);
+  if (uqlk.try_lock_for(std::chrono::seconds(1))) {
+    if (logger_->fp_ == NULL) {
+      logger_->fp_ = fopen(logger_->file_path_.c_str(), "ab+");
+    }
+    fwrite(buf, 1, size, logger_->fp_);
+    if (logger_->enable_fsync_) {
+      fflush(logger_->fp_);
+    }
+  }
 }
 
 void HoloDBLog::logger_print(int log_level, const char* fmt, ...) {
@@ -134,9 +164,12 @@ void HoloDBLog::logger_print(int log_level, const char* fmt, ...) {
     len += snprintf(buf + len, bufsize - len, "%s", CLR_CLR);
   }
 
+  //结尾写入,确保换行
+  buf[len + 1] = LF;
+
   switch (logger_->log_target_) {
     case log_target_e::file: {
-      // todo 写入文件中
+      logger_write(buf, len);
       break;
     }
     case log_target_e::terminal: {
@@ -145,7 +178,7 @@ void HoloDBLog::logger_print(int log_level, const char* fmt, ...) {
     }
     case log_target_e::file_and_terminal: {
       std::cout << buf << std::endl;
-      // todo 写入文件中
+      logger_write(buf, len);
       break;
     }
     default: {

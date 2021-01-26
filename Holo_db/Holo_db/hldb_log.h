@@ -11,9 +11,11 @@
 #ifdef _WIN32
 #define DIR_SEPARATOR '\\'
 #define DIR_SEPARATOR_STR "\\"
+#define LF '\r\n'
 #else
 #define DIR_SEPARATOR '/'
 #define DIR_SEPARATOR_STR "/"
+#define LF '\n'
 #endif
 
 #ifndef __FILENAME__
@@ -66,7 +68,7 @@ typedef enum {
 } log_target_e;
 
 // some default macro
-#define DEFAULT_LOG_FILE "Holo_DB"
+#define DEFAULT_LOG_FILE_PATH "Holo_DB.log"
 #define DEFAULT_LOG_LEVEL LOG_LEVEL_DEBUG
 #define DEFAULT_LOG_MAX_BUFSIZE (1 << 14)   // 16k
 #define DEFAULT_LOG_MAX_FILESIZE (1 << 24)  // 16M
@@ -76,16 +78,16 @@ using logger_hander =
 
 struct HoloDBLogger {
   logger_hander handler_;
-  unsigned int bufsize_;  //待输出数组的大小
-  char* buf_;             //指向待输出数组的指针
-  int log_level_;
-  std::string file_path_;
-  size_t max_logfilesize_;
-  int enable_fsync_;
-  int enable_color_;
-  FILE* fp_;
-  std::mutex mtx_;
-  int log_target_;
+  unsigned int bufsize_;    //待输出数组的大小
+  char* buf_;               //指向待输出数组的指针
+  int log_level_;           //日志级别
+  std::string file_path_;   //日志文件路径
+  size_t max_logfilesize_;  //日志文件大小
+  bool enable_fsync_;       //同步刷新到磁盘
+  bool enable_color_;       //颜色显示
+  FILE* fp_;                //文件流指针
+  std::timed_mutex mtx_;    //锁
+  int log_target_;          //日志输出地
 };
 
 class HoloDBLog {
@@ -98,6 +100,9 @@ class HoloDBLog {
   void logger_set_level(const std::string& log_level);
   void logger_set_filesize(size_t file_size);
   void logger_set_filesize(const std::string& file_size);
+  void logger_write(const char* buf, size_t size);
+  void logger_enable_color(bool flag);
+  void logger_enable_fsync(bool flag);
 
  private:
   HoloDBLog() { logger_ = new HoloDBLogger(); }
@@ -136,29 +141,29 @@ class HoloDBLog {
   HoloDBLog::GetInstance()->logger_set_filesize(filesize_str)
 
 // 日志信息
-#define hldb_log_debug(fmt, ...)                                          \
-  HoloDBLog::GetInstance()->logger_print(                                 \
-      LOG_LEVEL_DEBUG, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+#define hldb_log_debug(fmt, ...)                                            \
+  HoloDBLog::GetInstance()->logger_print(                                   \
+      LOG_LEVEL_DEBUG, "[%s][%d行][%s]" fmt "\r\n", __FILENAME__, __LINE__, \
       __FUNCTION__, ##__VA_ARGS__)
 
-#define hldb_log_info(fmt, ...)                                          \
-  HoloDBLog::GetInstance()->logger_print(                                \
-      LOG_LEVEL_INFO, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+#define hldb_log_info(fmt, ...)                                            \
+  HoloDBLog::GetInstance()->logger_print(                                  \
+      LOG_LEVEL_INFO, "[%s][%d行][%s]" fmt "\r\n", __FILENAME__, __LINE__, \
       __FUNCTION__, ##__VA_ARGS__)
 
-#define hldb_log_warn(fmt, ...)                                          \
-  HoloDBLog::GetInstance()->logger_print(                                \
-      LOG_LEVEL_WARN, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+#define hldb_log_warn(fmt, ...)                                            \
+  HoloDBLog::GetInstance()->logger_print(                                  \
+      LOG_LEVEL_WARN, "[%s][%d行][%s]" fmt "\r\n", __FILENAME__, __LINE__, \
       __FUNCTION__, ##__VA_ARGS__)
 
-#define hldb_log_error(fmt, ...)                                          \
-  HoloDBLog::GetInstance()->logger_print(                                 \
-      LOG_LEVEL_ERROR, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+#define hldb_log_error(fmt, ...)                                            \
+  HoloDBLog::GetInstance()->logger_print(                                   \
+      LOG_LEVEL_ERROR, "[%s][%d行][%s]" fmt "\r\n", __FILENAME__, __LINE__, \
       __FUNCTION__, ##__VA_ARGS__)
 
-#define hldb_log_fatal(fmt, ...)                                          \
-  HoloDBLog::GetInstance()->logger_print(                                 \
-      LOG_LEVEL_FATAL, "[%s][%d行][%s]" fmt "\n", __FILENAME__, __LINE__, \
+#define hldb_log_fatal(fmt, ...)                                            \
+  HoloDBLog::GetInstance()->logger_print(                                   \
+      LOG_LEVEL_FATAL, "[%s][%d行][%s]" fmt "\r\n", __FILENAME__, __LINE__, \
       __FUNCTION__, ##__VA_ARGS__)
 
 // 别名

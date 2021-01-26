@@ -24,9 +24,6 @@
     <ClCompile Include="hldb_log.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="hldb_file.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="keywords_def.h">
@@ -47,7 +44,7 @@
     <ClInclude Include="hldb_log.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="hldb_file.h">
+    <ClInclude Include="hldb_lru.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

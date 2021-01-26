@@ -40,6 +40,7 @@ void trim_cmd(std::string& cmd) {
 int main(int count, char* input_parameters[]) {
   // 日志组件初始化
   hldb_log_init();
+  hldb_log_set_target_by_str("file");
 
   // windows下通过cmd或git bash以"start Holo_DB.exe db_path"
   // linux下直接 Holo_DB db_path
@@ -50,8 +51,15 @@ int main(int count, char* input_parameters[]) {
     // input_parameters[0] = "Holo_DB.exe"
     db_path = input_parameters[1];
   }
-
   LOGINFO("db_path:%s", db_path.c_str());
+
+#ifdef HLDB_DEBUG
+  int i = 0;
+  do {
+    LOGINFO("TEST:%d", i);
+    i++;
+  } while (i < 100);
+#endif  // HLDB_DEBUG
 
   // 信息打印对象
   DisplayMsg dis_msg;
