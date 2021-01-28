@@ -47,5 +47,11 @@
     <ClInclude Include="hldb_lru.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="hldb_test.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hldb_singal_solt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
