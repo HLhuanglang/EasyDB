@@ -18,7 +18,6 @@ void HoloDBLog::logger_init() {
   logger_->file_path_ = DEFAULT_LOG_FILE_PATH;
   logger_->max_logfilesize_ = DEFAULT_LOG_MAX_BUFSIZE;
   logger_->enable_fsync_ = true;
-  logger_->enable_color_ = false;
   logger_->fp_ = NULL;
   logger_->log_target_ = log_target_e::terminal;
 }
@@ -63,14 +62,6 @@ void HoloDBLog::logger_set_filesize(size_t file_size) {
 
 void HoloDBLog::logger_set_filesize(const std::string& file_size) {
   // todo
-}
-
-void HoloDBLog::logger_enable_color(bool flag) {
-  if (flag) {
-    logger_->enable_color_ = true;
-  } else {
-    logger_->enable_color_ = false;
-  }
 }
 
 void HoloDBLog::logger_enable_fsync(bool flag) {
@@ -130,10 +121,9 @@ void HoloDBLog::logger_print(int log_level, const char* fmt, ...) {
   const char* color = "";
   const char* level = "";
 
-#define XXX(id, str, clr) \
-  case id:                \
-    color = clr;          \
-    level = str;          \
+#define XXX(id, str) \
+  case id:           \
+    level = str;     \
     break;
 
   //上面为了组装出switch的内容
@@ -145,27 +135,15 @@ void HoloDBLog::logger_print(int log_level, const char* fmt, ...) {
   int bufsize = logger_->bufsize_;
   int len = 0;
 
-  //颜色
-  if (logger_->enable_color_) {
-    len = snprintf(buf, bufsize, "%s", color);
-  }
-
   //时间
-  len += snprintf(buf + len, bufsize - len,
-                  "[%04d-%02d-%02d %02d:%02d:%02d.%02d][%s]", year, month, day,
-                  hour, min, sec, ms, level);
+  len = snprintf(buf + len, bufsize - len,
+                 "[%04d-%02d-%02d %02d:%02d:%02d.%03d][%s]", year, month, day,
+                 hour, min, sec, ms, level);
 
   va_list ap;
   va_start(ap, fmt);
   len += vsnprintf(buf + len, bufsize - len, fmt, ap);
   va_end(ap);
-
-  if (logger_->enable_color_) {
-    len += snprintf(buf + len, bufsize - len, "%s", CLR_CLR);
-  }
-
-  //结尾写入,确保换行
-  buf[len + 1] = LF;
 
   switch (logger_->log_target_) {
     case log_target_e::file: {

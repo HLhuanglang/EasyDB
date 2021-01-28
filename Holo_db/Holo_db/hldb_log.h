@@ -11,11 +11,9 @@
 #ifdef _WIN32
 #define DIR_SEPARATOR '\\'
 #define DIR_SEPARATOR_STR "\\"
-#define LF '\r\n'
 #else
 #define DIR_SEPARATOR '/'
 #define DIR_SEPARATOR_STR "/"
-#define LF '\n'
 #endif
 
 #ifndef __FILENAME__
@@ -24,38 +22,19 @@
                                     : __FILE__)
 #endif
 
-#define CLR_CLR "\033[0m"      /* »Ö¸´ÑÕÉ« */
-#define CLR_BLACK "\033[30m"   /* ºÚÉ«×Ö */
-#define CLR_RED "\033[31m"     /* ºìÉ«×Ö */
-#define CLR_GREEN "\033[32m"   /* ÂÌÉ«×Ö */
-#define CLR_YELLOW "\033[33m"  /* »ÆÉ«×Ö */
-#define CLR_BLUE "\033[34m"    /* À¶É«×Ö */
-#define CLR_PURPLE "\033[35m"  /* ×ÏÉ«×Ö */
-#define CLR_SKYBLUE "\033[36m" /* ÌìÀ¶×Ö */
-#define CLR_WHITE "\033[37m"   /* °×É«×Ö */
-
-#define CLR_BLK_WHT "\033[40;37m"     /* ºÚµ×°××Ö */
-#define CLR_RED_WHT "\033[41;37m"     /* ºìµ×°××Ö */
-#define CLR_GREEN_WHT "\033[42;37m"   /* ÂÌµ×°××Ö */
-#define CLR_YELLOW_WHT "\033[43;37m"  /* »Æµ×°××Ö */
-#define CLR_BLUE_WHT "\033[44;37m"    /* À¶µ×°××Ö */
-#define CLR_PURPLE_WHT "\033[45;37m"  /* ×Ïµ×°××Ö */
-#define CLR_SKYBLUE_WHT "\033[46;37m" /* ÌìÀ¶µ×°××Ö */
-#define CLR_WHT_BLK "\033[47;30m"     /* °×µ×ºÚ×Ö */
-
-// XXX(id, str, clr)
-#define LOG_LEVEL_MAP(XXX)                 \
-  XXX(LOG_LEVEL_DEBUG, "DEBUG", CLR_WHITE) \
-  XXX(LOG_LEVEL_INFO, "INFO ", CLR_GREEN)  \
-  XXX(LOG_LEVEL_WARN, "WARN ", CLR_YELLOW) \
-  XXX(LOG_LEVEL_ERROR, "ERROR", CLR_RED)   \
-  XXX(LOG_LEVEL_FATAL, "FATAL", CLR_RED_WHT)
+// XXX(id, str)
+#define LOG_LEVEL_MAP(XXX)      \
+  XXX(LOG_LEVEL_DEBUG, "DEBUG") \
+  XXX(LOG_LEVEL_INFO, "INFO ")  \
+  XXX(LOG_LEVEL_WARN, "WARN ")  \
+  XXX(LOG_LEVEL_ERROR, "ERROR") \
+  XXX(LOG_LEVEL_FATAL, "FATAL")
 
 // ÈÕÖ¾¼¶±ð£º
 // [VERBOSE¡¢DEBUG¡¢INFO¡¢WARN¡¢ERROR¡¢FATAL¡¢NULL(²»´òÓ¡)]
 typedef enum {
   LOG_LEVEL_VERBOSE = 0,
-#define XXX(id, str, clr) id,
+#define XXX(id, str) id,
   LOG_LEVEL_MAP(XXX)
 #undef XXX
       LOG_LEVEL_NULL
@@ -101,7 +80,6 @@ class HoloDBLog {
   void logger_set_filesize(size_t file_size);
   void logger_set_filesize(const std::string& file_size);
   void logger_write(const char* buf, size_t size);
-  void logger_enable_color(bool flag);
   void logger_enable_fsync(bool flag);
 
  private:

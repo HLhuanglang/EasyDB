@@ -57,6 +57,9 @@ int main(int count, char* input_parameters[]) {
   int i = 0;
   do {
     LOGINFO("TEST:%d", i);
+    LOGWARN("TEST:%d", i);
+    LOGERROR("TEST:%d", i);
+    LOGFATAL("TEST:%d", i);
     i++;
   } while (i < 100);
 #endif  // HLDB_DEBUG
@@ -95,7 +98,7 @@ int main(int count, char* input_parameters[]) {
         // sqlÓï¾ä
       }
     } else {
-      LOGERROR(
+      printf(
           "Error:unkonw commond or invalid arguments:[%s]. Enter[.help] for "
           "help!\n",
           cmd.c_str());
