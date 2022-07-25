@@ -12,3 +12,5 @@
 /Holo_db/Test/Debug
 /Holo_db/Holo_db/Holo_DB.log
 /out/build/x64-Debug (默认值)
+/compile_env/windows/.vs/msvc
+/bin
